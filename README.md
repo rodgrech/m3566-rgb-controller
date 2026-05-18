@@ -100,6 +100,26 @@ rest_command:
 Fully Kiosk can keep showing the Home Assistant dashboard. This app runs separately as the
 local bridge between Home Assistant and the tablet's RGB hardware.
 
+## Changelog
+
+### v0.2.0
+
+- Added foreground LAN HTTP API for Home Assistant.
+- Added RGB controls, test sequence, and status log in the tablet app.
+- Added Ethernet/Wi-Fi IP detection so the app shows the real API URL.
+- Added Android launcher and notification icons.
+- Added `Start API on boot` setting.
+- Added boot/update receiver support for starting the API service automatically.
+- Added battery optimization exemption prompt when autostart is enabled.
+- Added About section with version, source, license, credits, and hardware notes.
+- Added MIT license.
+
+### v0.1.0
+
+- Initial Android app for controlling M3566/RK3566 ADW RGB nodes.
+- Added support for vendor ADW paths and fallback documented LED brightness paths.
+- Corrected red/green channel mapping for the tested tablet hardware.
+
 ## License and credits
 
 MIT License.
