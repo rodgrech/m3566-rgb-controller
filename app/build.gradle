@@ -1,0 +1,14 @@
+apply plugin: "com.android.application"
+
+android {
+    namespace "com.codex.m3566lighttester"
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.codex.m3566lighttester"
+        minSdk 23
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+    }
+}
