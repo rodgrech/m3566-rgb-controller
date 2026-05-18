@@ -99,3 +99,12 @@ rest_command:
 
 Fully Kiosk can keep showing the Home Assistant dashboard. This app runs separately as the
 local bridge between Home Assistant and the tablet's RGB hardware.
+
+## License and credits
+
+MIT License.
+
+Created by Rodney Grech with Codex assistance.
+
+This project relies on the vendor-exposed ADW sysfs nodes documented for the RK3566/M3566
+tablet firmware.

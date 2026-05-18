@@ -2,14 +2,20 @@ package com.codex.m3566lighttester;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -80,10 +86,39 @@ public class MainActivity extends Activity {
         ));
 
         root.addView(section("Tools"));
+        CheckBox autostart = new CheckBox(this);
+        autostart.setText("Start API on boot");
+        autostart.setTextSize(15);
+        autostart.setTextColor(Color.rgb(20, 25, 31));
+        autostart.setChecked(AutostartSettings.isEnabled(this));
+        autostart.setPadding(0, dp(4), 0, dp(4));
+        autostart.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AutostartSettings.setEnabled(this, isChecked);
+            log("Start API on boot: " + (isChecked ? "enabled" : "disabled"));
+            if (isChecked) {
+                requestBatteryOptimizationExemption();
+            }
+        });
+        root.addView(autostart, matchWrap());
+
         root.addView(row(
                 actionButton("Test", Color.rgb(11, 122, 117), lights::testSequence),
                 actionButton("Status", Color.rgb(68, 78, 88), () -> lights.getState().toJson())
         ));
+
+        root.addView(section("About"));
+        TextView about = new TextView(this);
+        about.setText(
+                "Version " + getAppVersion() + "\n"
+                        + "License: MIT\n"
+                        + "Source: github.com/rodgrech/m3566-rgb-controller\n"
+                        + "Credits: Rodney Grech and Codex\n"
+                        + "Hardware: RK3566/M3566 ADW RGB nodes"
+        );
+        about.setTextSize(13);
+        about.setTextColor(Color.rgb(74, 85, 98));
+        about.setPadding(0, dp(4), 0, dp(10));
+        root.addView(about, matchWrap());
 
         logView = new TextView(this);
         logView.setTextSize(12);
@@ -150,6 +185,36 @@ public class MainActivity extends Activity {
             startForegroundService(service);
         } else {
             startService(service);
+        }
+    }
+
+    private void requestBatteryOptimizationExemption() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
+
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        if (powerManager != null && powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+            log("Battery optimization already disabled for this app");
+            return;
+        }
+
+        try {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception e) {
+            Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            startActivity(intent);
+        }
+    }
+
+    private String getAppVersion() {
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return "unknown";
         }
     }
 
