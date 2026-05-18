@@ -66,7 +66,7 @@ public class LightApiService extends Service {
                 : new Notification.Builder(this);
 
         return builder
-                .setSmallIcon(android.R.drawable.presence_online)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle("M3566 Light API")
                 .setContentText(text)
                 .setOngoing(true)
